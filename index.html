@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="BloodCare — local blood donation camp registration and analytics.">
+  <title>BloodCare | Camp Register</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">✚</span><span>BloodCare<small>COMMUNITY REGISTER</small></span></a>
+    <div class="nav-label">WORKSPACE</div>
+    <a class="nav active" href="#overview">▦ <span>Overview</span></a>
+    <a class="nav" href="#registrations">♙ <span>Registrations</span></a>
+    <a class="nav" href="#analytics">◫ <span>Analytics</span></a>
+    <a class="nav" href="#data-tools">⇧ <span>Data & Reports</span></a>
+    <div class="sidebar-bottom"><div class="live-dot"></div><div><b>Local workspace</b><small>Your data stays on this device</small></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">COMMUNITY HEALTH / OPERATIONS</div><h1>Blood Donation Camp Register</h1><p class="sub">A clear view of registrations, blood groups and camp activity.</p></div>
+      <div class="top-actions"><span class="local-pill"><i></i> LOCAL DATA</span><button class="primary" id="newDonorBtn">＋ Register donor</button></div>
+    </header>
+    <section id="overview">
+      <div class="section-head"><div><h2>Overview</h2><p>Live operational snapshot</p></div><span class="date-label" id="todayLabel"></span></div>
+      <div class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span>Total registrations</span><span class="stat-icon red">♙</span></div><strong id="totalStat">0</strong><small>All saved camp records</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Donors marked donated</span><span class="stat-icon green">✓</span></div><strong id="donatedStat">0</strong><small id="donationRate">0% completion rate</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Average donor age</span><span class="stat-icon blue">⌁</span></div><strong id="ageStat">—</strong><small>Across valid registrations</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Overdue registrations</span><span class="stat-icon amber">!</span></div><strong id="overdueStat">0</strong><small>Past camp date, still registered</small></article>
+      </div>
+      <div id="warnings" class="warnings"></div>
+    </section>
+    <section class="content-grid" id="analytics">
+      <article class="panel chart-panel"><div class="panel-head"><div><h3>Blood group distribution</h3><p>Registrations by blood type</p></div><span class="tag">LIVE ANALYTICS</span></div>
+        <div class="chart-wrap"><canvas id="bloodChart" aria-label="Blood group distribution chart"></canvas><div id="chartEmpty" class="chart-empty">Add registrations to see the distribution.</div></div>
+        <div id="groupLegend" class="legend"></div>
+      </article>
+      <article class="panel status-panel"><div class="panel-head"><div><h3>Registration status</h3><p>Current workflow breakdown</p></div></div><div id="statusBars" class="status-bars"></div>
+        <div class="mini-note">Update a registration status as the camp workflow progresses.</div>
+      </article>
+    </section>
+    <section class="panel table-panel" id="registrations">
+      <div class="panel-head table-heading"><div><h2>Donor registrations</h2><p>Search, filter and manage local records</p></div><button class="secondary" id="refreshBtn">↻ Refresh</button></div>
+      <div class="filters"><label class="searchbox">⌕ <input id="searchInput" placeholder="Search name, ID, phone or city..." aria-label="Search registrations"></label>
+        <select id="groupFilter" aria-label="Filter by blood group"><option value="">All blood groups</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+        <select id="statusFilter" aria-label="Filter by status"><option value="">All statuses</option><option>Registered</option><option>Contacted</option><option>Donated</option><option>Cancelled</option></select>
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>DONOR</th><th>BLOOD GROUP</th><th>AGE</th><th>CITY</th><th>CAMP DATE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="donorRows"><tr><td colspan="7" class="empty">Loading registrations…</td></tr></tbody></table></div>
+      <div class="table-foot"><span id="recordCount">0 records</span><span>Changes save automatically to local JSON + CSV</span></div>
+    </section>
+    <section class="bottom-grid" id="data-tools">
+      <article class="panel"><div class="panel-head"><div><h3>Import dataset</h3><p>Bulk import a legacy CSV file with row-level validation</p></div><span class="tool-icon">⇧</span></div>
+        <label class="file-drop"><input type="file" id="csvFile" accept=".csv,text/csv"><span class="upload-symbol">↑</span><b>Choose a CSV file</b><small>Required columns: name, age, gender, phone, blood_group, city, camp_date, status</small></label><div id="importResult" class="feedback"></div>
+      </article>
+      <article class="panel"><div class="panel-head"><div><h3>Export & audit</h3><p>Generate portable reports for review</p></div><span class="tool-icon">⇩</span></div>
+        <div class="export-list"><div><b>Executive summary</b><small>Markdown report with metrics and group counts</small></div><button class="secondary" id="exportBtn">Generate reports</button></div>
+        <div id="exportResult" class="feedback"></div>
+      </article>
+    </section>
+    <footer><span>BloodCare <b>v1.0.0</b></span><span>Built for reliable local camp registration · No cloud account required</span></footer>
+  </main>
+</div>
+<div class="modal-backdrop" id="donorModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head"><div><div class="eyebrow">DONOR INFORMATION</div><h2 id="modalTitle">Register a donor</h2><p>Fields marked * are required.</p></div><button class="icon-btn" id="closeModal" aria-label="Close">✕</button></div>
+    <form id="donorForm">
+      <div class="form-grid">
+        <label class="wide">Full name *<input name="name" required minlength="2" maxlength="70" placeholder="e.g. Aditi Sharma"></label>
+        <label>Age *<input name="age" type="number" min="18" max="65" required placeholder="18–65"></label>
+        <label>Gender *<select name="gender" required><option value="">Select gender</option><option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option></select></label>
+        <label>Mobile number *<input name="phone" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" required placeholder="10-digit mobile"></label>
+        <label>Blood group *<select name="blood_group" required><option value="">Select group</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label>
+        <label class="wide">City / locality *<input name="city" required minlength="2" maxlength="60" placeholder="e.g. Kukatpally"></label>
+        <label>Camp date *<input name="camp_date" type="date" required></label>
+        <label>Registration status<select name="status"><option>Registered</option><option>Contacted</option><option>Donated</option><option>Cancelled</option></select></label>
+      </div>
+      <div class="form-note">This register records administrative information only. It does not determine medical eligibility to donate blood.</div>
+      <div class="form-actions"><button type="button" class="secondary" id="cancelModal">Cancel</button><button class="primary" type="submit" id="saveDonorBtn">Save registration</button></div>
+      <div id="formError" class="form-error" role="alert"></div>
+    </form>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body></html>
